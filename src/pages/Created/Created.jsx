@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { motion } from 'framer-motion';
-import { Copy, Check, Users, Lightbulb, Wifi, MapPin, Shield, ArrowRight, Lock, Share2 } from 'lucide-react';
+import { Copy, Check, Users, Lock, Share2 } from 'lucide-react';
 import styles from './Created.module.css';
 import Button from '../../components/Button/Button.jsx';
 import { useBubble } from '../../store/bubbleStore.js';
@@ -14,6 +14,26 @@ export default function Created() {
   const { addToast } = useUiActions();
 
   const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 mins
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTimeLeft(t => Math.max(0, t - 1)), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const rTimer = setTimeout(() => {
+      setRequests([{ id: 'r1', name: 'Aarav' }]);
+    }, 3000);
+    const rTimer2 = setTimeout(() => {
+      setRequests(prev => [...prev, { id: 'r2', name: 'Meera' }]);
+    }, 7000);
+    return () => { clearTimeout(rTimer); clearTimeout(rTimer2); };
+  }, []);
+
+  const handleApprove = (id) => setRequests(prev => prev.filter(r => r.id !== id));
+  const handleDeny = (id) => setRequests(prev => prev.filter(r => r.id !== id));
 
   useEffect(() => {
     if (!bubble) {
@@ -61,14 +81,25 @@ export default function Created() {
           <h1 className={styles.title}>Bubble Created!</h1>
           <p className={styles.sub}>Share this QR code or PIN to invite others nearby.</p>
 
-          <div className={styles.qrWrap}>
+          <div className={styles.qrWrap} style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <svg style={{ position: 'absolute', width: 220, height: 220, transform: 'rotate(-90deg)' }}>
+              <circle cx="110" cy="110" r="100" fill="none" stroke="#E2E8F0" strokeWidth="6" />
+              <circle 
+                cx="110" cy="110" r="100" fill="none" stroke="var(--mode-accent)" strokeWidth="6"
+                strokeDasharray="628" strokeDashoffset={628 * (1 - timeLeft/300)}
+                style={{ transition: 'stroke-dashoffset 1s linear' }}
+              />
+            </svg>
             <QRCodeSVG
               value={qrData}
-              size={180}
+              size={170}
               level="M"
-              bgColor="#F0F9FF"
+              bgColor="transparent"
               fgColor="#0F172A"
             />
+            <div style={{ position: 'absolute', bottom: -20, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+              Expires in {Math.floor(timeLeft/60)}:{String(timeLeft%60).padStart(2,'0')}
+            </div>
           </div>
 
           <div className={styles.pinRow}>
@@ -92,44 +123,37 @@ export default function Created() {
         </div>
 
         <div className={styles.rightCol}>
-          <div className={styles.infoCard}>
-            <div className={styles.iconCircle}><Users size={20} /></div>
-            <div>
-              <div className={styles.infoTitle}>What happens next?</div>
-              <div className={styles.infoText}>
-                People nearby can scan the QR code or enter the PIN to join this bubble and connect with you.
-              </div>
-            </div>
-          </div>
-
           <div className={styles.tipsHeader}>
-            <Lightbulb size={18} color="#0284C7" /> Quick Tips
+            <Users size={18} color="#0284C7" /> Join Requests ({requests.length})
           </div>
 
-          <div className={styles.tipCard}>
-            <div className={styles.tipIcon}><Wifi size={16} /></div>
-            <div className={styles.tipText}>Keep your device's mesh relay on for better connectivity.</div>
-          </div>
-
-          <div className={styles.tipCard}>
-            <div className={styles.tipIcon}><MapPin size={16} /></div>
-            <div className={styles.tipText}>Stay in the same area for a stronger connection.</div>
-          </div>
-
-          <div className={styles.tipCard}>
-            <div className={styles.tipIcon}><Shield size={16} /></div>
-            <div className={styles.tipText}>End-to-end encrypted & privacy focused.</div>
-          </div>
-
-          <div className={styles.networkCard} onClick={handleShare}>
-            <div className={styles.iconCircle}><Users size={20} /></div>
-            <div>
-              <div className={styles.networkTitle}>More people = Stronger network</div>
-              <div className={styles.tipText}>Invite your friends and grow your bubble!</div>
-            </div>
-            <div className={styles.networkArrow}>
-              <ArrowRight size={14} />
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
+            {requests.length === 0 ? (
+              <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '32px 0' }}>
+                Waiting for people to scan...
+              </div>
+            ) : (
+              requests.map(req => (
+                <motion.div 
+                  key={req.id}
+                  initial={{ x: 50, opacity: 0 }} 
+                  animate={{ x: 0, opacity: 1 }} 
+                  className={styles.infoCard} 
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--mode-accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'var(--mode-accent)' }}>
+                      {req.name.charAt(0)}
+                    </div>
+                    <div style={{ fontWeight: 600 }}>{req.name}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <Button size="sm" variant="ghost" onClick={() => handleDeny(req.id)}>Deny</Button>
+                    <Button size="sm" variant="primary" onClick={() => handleApprove(req.id)}>Approve</Button>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </motion.div>

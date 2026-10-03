@@ -6,7 +6,6 @@ import styles from './Notes.module.css';
 import Avatar from '../../components/Avatar/Avatar.jsx';
 import IconButton from '../../components/IconButton/IconButton.jsx';
 import { useBubble } from '../../store/bubbleStore.js';
-import { useUiActions } from '../../store/uiStore.js';
 import { NODE_IDS } from '../../sim/nodes.js';
 import { LWWMap } from '../../utils/lamport.js';
 
@@ -18,12 +17,84 @@ const INITIAL_PINS = [
 
 const INITIAL_NOTES_OPS = [
   { key: 'n1', val: { id: 'n1', author: 'Sana', content: 'Has anyone reviewed the PR?', time: Date.now()-60000, replies: [] } },
-  { key: 'n2', val: { id: 'n2', author: 'Rohan', content: 'Checklist for today:\n- [x] Fix login bug\n- [ ] Update docs', time: Date.now()-120000, replies: [] } }
+  { key: 'n2', val: { id: 'n2', author: 'Rohan', content: 'Checklist for today:\n- [x] Fix login bug\n- [ ] Update docs\n\n```javascript\nconsole.log("hello");\n```', time: Date.now()-120000, replies: [] } }
 ];
+
+function renderMarkdown(text) {
+  // Very basic markdown for demo purposes
+  let html = text.replace(/```([\s\S]*?)```/g, '<pre style="background:#f1f5f9;padding:8px;border-radius:4px;overflow-x:auto;">$1</pre>');
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\n/g, '<br/>');
+  return html;
+}
+
+const NoteItem = memo(function NoteItem({ n, highlightNote, setReplyTo, setEditId, setText, deleteNote }) {
+  const [viewMode, setViewMode] = useState('note'); // 'note' or 'code'
+
+  return (
+    <div className={clsx(styles.noteItem, highlightNote === n.id && styles.highlight)}>
+      <Avatar name={n.author} size="sm" bg={n.author === 'You' ? 'var(--mode-accent)' : '#E2E8F0'} color={n.author === 'You' ? '#fff' : '#475569'} />
+      <div className={styles.noteContent}>
+        <div className={styles.noteHeader}>
+          <span className={styles.authorName}>{n.author}</span>
+          <span className={styles.noteTime}>{new Date(n.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+          
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, background: '#F1F5F9', padding: 2, borderRadius: 6 }}>
+            <button 
+              onClick={() => setViewMode('note')} 
+              style={{ fontSize: '0.65rem', padding: '2px 6px', border: 'none', borderRadius: 4, cursor: 'pointer', background: viewMode === 'note' ? '#FFF' : 'transparent', fontWeight: viewMode === 'note' ? 600 : 400, boxShadow: viewMode === 'note' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}
+            >
+              Note
+            </button>
+            <button 
+              onClick={() => setViewMode('code')} 
+              style={{ fontSize: '0.65rem', padding: '2px 6px', border: 'none', borderRadius: 4, cursor: 'pointer', background: viewMode === 'code' ? '#FFF' : 'transparent', fontWeight: viewMode === 'code' ? 600 : 400, boxShadow: viewMode === 'code' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}
+            >
+              Code
+            </button>
+          </div>
+        </div>
+        
+        {viewMode === 'note' ? (
+          <div className={styles.noteText} dangerouslySetInnerHTML={{ __html: renderMarkdown(n.content) }} />
+        ) : (
+          <pre className={styles.noteText} style={{ background: '#f8fafc', padding: '8px', borderRadius: '4px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+            {n.content}
+          </pre>
+        )}
+        
+        <div className={styles.noteActions}>
+          <button className={styles.actionBtn} onClick={() => { setReplyTo(n.id); setEditId(null); setText(''); }}><Reply size={12}/> Reply</button>
+          {n.author === 'You' && (
+            <>
+              <button className={styles.actionBtn} onClick={() => { setEditId(n.id); setReplyTo(null); setText(n.content); }}><Edit2 size={12}/> Edit</button>
+              <button className={styles.actionBtn} onClick={() => deleteNote(n.id)}><Trash2 size={12}/> Delete</button>
+            </>
+          )}
+        </div>
+
+        {n.replies && n.replies.length > 0 && (
+          <div className={styles.replies}>
+            {n.replies.map(r => (
+              <div key={r.id} style={{display:'flex', gap: 8, marginTop: 8}}>
+                <Avatar name={r.author} size="xs" />
+                <div>
+                  <div style={{fontSize: '0.75rem'}}>
+                    <span style={{fontWeight: 600}}>{r.author}</span> <span style={{color: 'var(--text-muted)'}}>{new Date(r.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+                  </div>
+                  <div style={{fontSize: '0.875rem'}} dangerouslySetInnerHTML={{ __html: renderMarkdown(r.content) }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
 
 export default function Notes() {
   const bubble = useBubble();
-  const { addToast } = useUiActions();
   
   const [pins, setPins] = useState(INITIAL_PINS);
   
@@ -169,42 +240,15 @@ export default function Notes() {
             {notesList.length === 0 && <div style={{color: 'var(--text-muted)', textAlign: 'center', marginTop: 40}}>No notes yet.</div>}
             
             {notesList.map(n => (
-              <div key={n.id} className={clsx(styles.noteItem, highlightNote === n.id && styles.highlight)}>
-                <Avatar name={n.author} size="sm" bg={n.author === 'You' ? 'var(--mode-accent)' : '#E2E8F0'} color={n.author === 'You' ? '#fff' : '#475569'} />
-                <div className={styles.noteContent}>
-                  <div className={styles.noteHeader}>
-                    <span className={styles.authorName}>{n.author}</span>
-                    <span className={styles.noteTime}>{new Date(n.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
-                  </div>
-                  <div className={styles.noteText}>{n.content}</div>
-                  
-                  <div className={styles.noteActions}>
-                    <button className={styles.actionBtn} onClick={() => { setReplyTo(n.id); setEditId(null); setText(''); }}><Reply size={12}/> Reply</button>
-                    {n.author === 'You' && (
-                      <>
-                        <button className={styles.actionBtn} onClick={() => { setEditId(n.id); setReplyTo(null); setText(n.content); }}><Edit2 size={12}/> Edit</button>
-                        <button className={styles.actionBtn} onClick={() => deleteNote(n.id)}><Trash2 size={12}/> Delete</button>
-                      </>
-                    )}
-                  </div>
-
-                  {n.replies && n.replies.length > 0 && (
-                    <div className={styles.replies}>
-                      {n.replies.map(r => (
-                        <div key={r.id} style={{display:'flex', gap: 8, marginTop: 8}}>
-                          <Avatar name={r.author} size="xs" />
-                          <div>
-                            <div style={{fontSize: '0.75rem'}}>
-                              <span style={{fontWeight: 600}}>{r.author}</span> <span style={{color: 'var(--text-muted)'}}>{new Date(r.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
-                            </div>
-                            <div style={{fontSize: '0.875rem'}}>{r.content}</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <NoteItem 
+                key={n.id} 
+                n={n} 
+                highlightNote={highlightNote} 
+                setReplyTo={setReplyTo} 
+                setEditId={setEditId} 
+                setText={setText} 
+                deleteNote={deleteNote} 
+              />
             ))}
           </div>
 

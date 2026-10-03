@@ -5,7 +5,7 @@
 
 import { useEffect, useRef } from 'react';
 import { simulator } from '../sim/simulator.js';
-import { useNodeList, useMembersActions } from '../store/membersStore.js';
+import { useMembersActions } from '../store/membersStore.js';
 import { useMessagesActions } from '../store/messagesStore.js';
 import useBubbleStore from '../store/bubbleStore.js';
 

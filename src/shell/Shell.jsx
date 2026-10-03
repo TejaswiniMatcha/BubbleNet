@@ -11,9 +11,15 @@ import ToastContainer from '../components/Toast/Toast.jsx';
 import Onboarding from '../components/Onboarding/Onboarding.jsx';
 import { useSimLoop } from '../hooks/useSimLoop.js';
 import { useBubble, useMode } from '../store/bubbleStore.js';
+import { useExpiryEngine } from '../hooks/useExpiryEngine.js';
+import { useSosEngine } from '../hooks/useSosEngine.js';
+import SosModal from '../components/SosModal/SosModal.jsx';
+import DissolveOverlay from '../components/DissolveOverlay/DissolveOverlay.jsx';
 
 export default function Shell() {
   useSimLoop();
+  useExpiryEngine();
+  useSosEngine();
   const mode = useMode();
   const bubble = useBubble();
 
@@ -59,6 +65,8 @@ export default function Shell() {
 
       <ToastContainer />
       <Onboarding />
+      <SosModal />
+      <DissolveOverlay />
     </>
   );
 }

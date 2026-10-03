@@ -10,8 +10,10 @@ import clsx from 'clsx';
 import styles from './Home.module.css';
 import Button from '../../components/Button/Button.jsx';
 import Modal from '../../components/Modal/Modal.jsx';
-import { useBubble, useMode, useBubbleActions } from '../../store/bubbleStore.js';
+import { useBubble, useMode, useBubbleActions, DEMO_PIN } from '../../store/bubbleStore.js';
 import useBubbleStore from '../../store/bubbleStore.js';
+import { useMessagesActions } from '../../store/messagesStore.js';
+import { useMembersActions } from '../../store/membersStore.js';
 import { Users, UserPlus, LogOut, Radio, Clock, ShieldAlert, Handshake } from 'lucide-react';
 import { simulator } from '../../sim/simulator.js';
 
@@ -26,13 +28,15 @@ export default function Home() {
   const navigate = useNavigate();
   const bubble   = useBubble();
   const currentMode = useMode();
-  const { clearBubble, setMode } = useBubbleActions();
+  const { clearBubble, setMode, setBubble, setExpiresAt } = useBubbleActions();
+  const { clearMessages } = useMessagesActions();
+  const { resetNodes } = useMembersActions();
   const expiresAt = useBubbleStore((s) => s.expiresAt);
   const [remaining, setRemaining] = useState(null);
   const [leaveModalOpen, setLeaveModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!expiresAt) { setRemaining(null); return; }
+    if (!expiresAt) return;
     function update() {
       const left = expiresAt - Date.now();
       setRemaining(Math.max(0, left));
@@ -41,6 +45,8 @@ export default function Home() {
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, [expiresAt]);
+
+  const displayRemaining = expiresAt ? remaining : null;
 
   function formatRemaining(ms) {
     if (!ms || ms <= 0) return '00h : 00m';
@@ -52,8 +58,18 @@ export default function Home() {
 
   function handleLeave() {
     clearBubble();
+    clearMessages();
+    resetNodes();
     simulator.resetDemo();
     setLeaveModalOpen(false);
+  }
+
+  function handleJoinNearby() {
+    const bubbleObj = simulator.joinBubble(DEMO_PIN);
+    setBubble(bubbleObj);
+    setMode('social');
+    setExpiresAt(Date.now() + 3600 * 1000);
+    navigate('/bubble/messages');
   }
 
   if (bubble) {
@@ -71,7 +87,7 @@ export default function Home() {
               <div className={styles.activeTitleWrap}>
                 <h2 className={styles.activeTitle}>{bubble.name}</h2>
                 <div className={styles.activeMeta}>
-                  <Clock size={14} /> {formatRemaining(remaining)}
+                  <Clock size={14} /> {formatRemaining(displayRemaining)}
                 </div>
               </div>
             </div>
@@ -164,6 +180,20 @@ export default function Home() {
           </div>
         ))}
       </motion.div>
+
+      <div className={styles.nearbySection}>
+        <h3 className={styles.nearbyTitle}>Nearby Bubbles</h3>
+        <div className={styles.bubbleList}>
+          <div className={styles.bubbleCard}>
+            <div className={styles.bubbleIcon}><Radio size={24} color="var(--mode-accent)"/></div>
+            <div className={styles.bubbleInfo}>
+              <div className={styles.bubbleName}>Campus Fest Block A</div>
+              <div className={styles.bubbleMeta}>Social • 5 members • 12m away</div>
+            </div>
+            <Button size="sm" onClick={handleJoinNearby}>Join</Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

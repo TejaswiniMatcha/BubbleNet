@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import styles from './Onboarding.module.css';
@@ -43,19 +43,21 @@ const STEPS = [
 ];
 
 export default function Onboarding() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const done = localStorage.getItem('onboarding_done');
+        return !done;
+      }
+    } catch {
+      // ignore
+    }
+    return false;
+  });
+
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    try {
-      const done = localStorage.getItem('onboarding_done');
-      if (!done) setOpen(true);
-    } catch (e) {
-      // safely ignore
-    }
-  }, []);
 
   if (!open) return null;
 
@@ -63,7 +65,9 @@ export default function Onboarding() {
     try {
       localStorage.setItem('onboarding_done', 'true');
       if (name.trim()) localStorage.setItem('user_name', name.trim());
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
     setOpen(false);
   }
 

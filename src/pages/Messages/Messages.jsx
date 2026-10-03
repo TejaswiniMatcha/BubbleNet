@@ -1,19 +1,19 @@
-import { useRef, useEffect, memo, useState } from 'react';
+import { useRef, useEffect, memo, useState, useMemo } from 'react';
 import {
   Send, Clock, Check, CheckCheck, Smile, Paperclip,
   Image as ImageIcon, File, BarChart2, MapPin,
   MessageCircle, Users, ChevronDown,
-  Plus, Search, MoreHorizontal, Edit2, Lock, Shield
+  Plus, Search, MoreHorizontal, Edit2, Lock, Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import styles from './Messages.module.css';
 import Avatar from '../../components/Avatar/Avatar.jsx';
-import { useMessageStates } from '../../store/messagesStore.js';
+import { useMessageStates, useConvMessages, useMessagesActions } from '../../store/messagesStore.js';
 import { useNodeList } from '../../store/membersStore.js';
-import { useBubble } from '../../store/bubbleStore.js';
+import { useBubble, useSosState, useBubbleActions } from '../../store/bubbleStore.js';
 import { simulator } from '../../sim/simulator.js';
-import { NODE_IDS, INITIAL_NODES } from '../../sim/nodes.js';
+import { NODE_IDS } from '../../sim/nodes.js';
 import { PRIORITY, MSG_STATE } from '../../sim/relay.js';
 import { useUiActions } from '../../store/uiStore.js';
 import { useNavigate } from 'react-router-dom';
@@ -23,26 +23,7 @@ const EMOJIS = ['👍', '❤️', '😂', '🔥', '🎉', '😢', '👀', '✨',
 function formatTime(ms) {
   return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
-function formatDate(ms) {
-  const d = new Date(ms);
-  return d.toLocaleDateString('en-US', { weekday: 'short' }); // "Mon"
-}
 
-// Seeded fake messages for demo
-const FAKE_CONV = {
-  group: [
-    { id: 'f1', fromId: NODE_IDS.MEERA, content: "Hey everyone! Are we still meeting at the campus node?", sentAt: Date.now() - 10 * 60000 },
-    { id: 'f2', fromId: NODE_IDS.YOU, content: "Yes! I'll be there in 10 mins.", sentAt: Date.now() - 8 * 60000 },
-    { id: 'f3', fromId: NODE_IDS.ROHAN, content: "Great! I'm on my way too.", sentAt: Date.now() - 7 * 60000 },
-    { id: 'f4', fromId: NODE_IDS.SANA, content: "Can someone share the latest QR code for the bubble?", sentAt: Date.now() - 5 * 60000 },
-    { id: 'f5', fromId: NODE_IDS.YOU, content: "Here you go! QR_Code.png", sentAt: Date.now() - 4 * 60000 },
-    { id: 'f6', fromId: NODE_IDS.AARAV, content: "Got it! Thanks!", sentAt: Date.now() - 2 * 60000 },
-  ],
-  'aarav': [{ id: 'fa1', fromId: 'aarav', content: "Let's meet at the node!", sentAt: Date.now() - 60000 }],
-  'meera': [{ id: 'fm1', fromId: 'meera', content: "Okay! I'll be there soon.", sentAt: Date.now() - 90000 }],
-  'rohan': [{ id: 'fr1', fromId: 'rohan', content: "Let's meet at the node!", sentAt: Date.now() - 180000 }],
-  'sana':  [{ id: 'fs1', fromId: 'sana',  content: "Sounds good 👌", sentAt: Date.now() - 86400000 }],
-};
 
 const CONV_PREVIEWS = {
   group:          { preview: 'All members', time: '12:42 PM', unread: 5 },
@@ -60,14 +41,14 @@ const DeliveryStatus = memo(({ state }) => {
   return null;
 });
 
-const MessageItem = memo(function MessageItem({ msg, isOwn, node, msgState }) {
+const MessageItem = memo(function MessageItem({ msg, isOwn, node, msgState, getNodeName }) {
   const st = msgState?.state ?? MSG_STATE.DELIVERED;
   const [showRipple, setShowRipple] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const prevStateRef = useRef(st);
 
   useEffect(() => {
-    if (prevStateRef.current === MSG_STATE.QUEUED && st === MSG_STATE.DELIVERED) {
+    if (prevStateRef.current !== MSG_STATE.DELIVERED && st === MSG_STATE.DELIVERED) {
       setShowRipple(true);
       setTimeout(() => setShowRipple(false), 600);
     }
@@ -89,11 +70,21 @@ const MessageItem = memo(function MessageItem({ msg, isOwn, node, msgState }) {
           className={clsx(styles.bubble, isOwn && styles.ownBubble, showRipple && styles.rippleEffect)}
           onContextMenu={(e) => { e.preventDefault(); setMenuOpen(!menuOpen); }}
         >
+          {msgState?.path && msgState.path.length > 2 && !isOwn && (
+            <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4, background: 'rgba(0,0,0,0.05)', padding: '2px 6px', borderRadius: 4, display: 'inline-block' }}>
+              {msgState.path.map(id => getNodeName(id)).join(' → ')}
+            </div>
+          )}
           <div className={styles.msgText}>{msg.content}</div>
           <div className={styles.msgMeta}>
             <span className={styles.time}>{formatTime(msg.sentAt)}</span>
             {isOwn && <DeliveryStatus state={st} />}
           </div>
+          {msg.reaction && (
+            <div style={{ position: 'absolute', bottom: -10, right: 10, background: 'var(--bg-page)', border: '1px solid var(--border-light)', borderRadius: 12, padding: '2px 6px', fontSize: '0.75rem', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+              {msg.reaction}
+            </div>
+          )}
         </div>
         <AnimatePresence>
           {menuOpen && (
@@ -103,7 +94,18 @@ const MessageItem = memo(function MessageItem({ msg, isOwn, node, msgState }) {
               style={{ [isOwn ? 'right' : 'left']: 0, top: '100%', marginTop: 4, width: 200, zIndex: 50 }}
             >
               <button className={styles.popoverBtn} onClick={() => { navigator.clipboard?.writeText(msg.content); setMenuOpen(false); }}>Copy Text</button>
-              <button className={styles.popoverBtn} onClick={() => setMenuOpen(false)}>Message Details</button>
+              {msgState?.path && msgState.path.length > 0 && (
+                <div style={{ padding: '8px 12px', fontSize: '0.75rem', color: 'var(--text-secondary)', borderTop: '1px solid var(--border-light)' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 2 }}>Route Details</div>
+                  <div>{msgState.path.map(id => getNodeName(id)).join(' → ')}</div>
+                  <div>Hops: {msgState.hopCount ?? 0}</div>
+                </div>
+              )}
+              <div style={{ padding: '8px 12px', display: 'flex', gap: 4, borderTop: '1px solid var(--border-light)' }}>
+                {['👍', '❤️', '😂', '🔥'].map(em => (
+                  <button key={em} onClick={() => { msg.reaction = em; setMenuOpen(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>{em}</button>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -126,6 +128,9 @@ export default function Messages() {
   const { addToast } = useUiActions();
   const msgStates = useMessageStates();
   const nodes = useNodeList();
+  const { alerts } = useSosState();
+  const { removeSosAlert } = useBubbleActions();
+  const [todayStr] = useState(() => new Date().toLocaleDateString());
 
   const [activeNav, setActiveNav] = useState('chat');
   const [activeConv, setActiveConv] = useState('group');
@@ -134,35 +139,58 @@ export default function Messages() {
   const [attachOpen, setAttachOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [showMembers, setShowMembers] = useState(false);
+  const [typingNode, setTypingNode] = useState(null);
 
-  // Local per-conversation message lists, seeded with FAKE_CONV
-  const [convMessages, setConvMessages] = useState(() => {
-    const init = {};
-    Object.entries(FAKE_CONV).forEach(([k, v]) => { init[k] = [...v]; });
-    return init;
-  });
+  const convMessages = useConvMessages();
+  const { setConvMessages } = useMessagesActions();
 
   const listRef = useRef(null);
-  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+  
+  const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
+  const nodeMapRef = useRef(nodeMap);
+  useEffect(() => {
+    nodeMapRef.current = nodeMap;
+  }, [nodeMap]);
+  
   const others = nodes.filter(n => n.id !== NODE_IDS.YOU);
 
   useEffect(() => {
     if (!bubble) { addToast({ message: 'Create or join a bubble first.', type: 'info' }); navigate('/'); }
   }, [bubble, navigate, addToast]);
 
-  // Listen directly to simulator for incoming member messages
+  // Listen to simulator for incoming member messages when they arrive
   useEffect(() => {
-    const unsub = simulator.eventBus.on('new-message', (msg) => {
+    const unsub = simulator.eventBus.on('message-delivered', (msg) => {
       if (msg.fromId === NODE_IDS.YOU) return; // already added optimistically
       setConvMessages(prev => {
         const convKey = 'group';
         const existing = prev[convKey] ?? [];
         if (existing.find(m => m.id === msg.id)) return prev;
-        return { ...prev, [convKey]: [...existing, msg] };
+        
+        const updates = { ...prev, [convKey]: [...existing, msg] };
+        
+        // If it took multiple hops, add a system message before it
+        if (msg.path && msg.path.length > 2) {
+          const relayerId = msg.path[msg.path.length - 2];
+          const senderId = msg.fromId;
+          const map = nodeMapRef.current;
+          const relayerNode = map.get(relayerId);
+          const senderNode = map.get(senderId);
+          if (relayerNode && senderNode) {
+            updates[convKey].splice(updates[convKey].length - 1, 0, {
+              id: `sys-${msg.id}`,
+              type: 'system',
+              content: `${relayerNode.name}'s phone is relaying for ${senderNode.name}`,
+              sentAt: msg.sentAt - 1
+            });
+          }
+        }
+        
+        return updates;
       });
     });
     return () => unsub();
-  }, []);
+  }, [setConvMessages]);
 
   const messages = convMessages[activeConv] ?? [];
 
@@ -174,7 +202,9 @@ export default function Messages() {
   function addReply(delay = 1500) {
     const pool = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
     const replyText = pool.texts[Math.floor(Math.random() * pool.texts.length)];
+    setTypingNode(pool.from);
     setTimeout(() => {
+      setTypingNode(null);
       const reply = {
         id: `reply-${Date.now()}`,
         fromId: pool.from,
@@ -195,8 +225,11 @@ export default function Messages() {
     if (!text.trim()) return;
     if (text.length > 10000) { addToast({ message: 'Message too long.', type: 'danger' }); return; }
 
+    // Push through simulator for relay/delivery states
+    const msgId = simulator.sendText(text.trim(), PRIORITY.TEXT, activeConv === 'group' ? NODE_IDS.SANA : activeConv);
+
     const newMsg = {
-      id: `sent-${Date.now()}`,
+      id: msgId,
       fromId: NODE_IDS.YOU,
       toId: activeConv === 'group' ? NODE_IDS.SANA : activeConv,
       content: text.trim(),
@@ -210,9 +243,6 @@ export default function Messages() {
       ...prev,
       [activeConv]: [...(prev[activeConv] ?? []), newMsg],
     }));
-
-    // Push through simulator for relay/delivery states
-    simulator.sendText(text.trim(), PRIORITY.TEXT, activeConv === 'group' ? NODE_IDS.SANA : activeConv);
 
     // Trigger a simulated reply for group chats
     if (activeConv === 'group') addReply(1200);
@@ -358,6 +388,17 @@ export default function Messages() {
 
         {/* Message list */}
         <div className={styles.list} ref={listRef}>
+          
+          {alerts && alerts.length > 0 && (
+            <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#FFF0F2', border: '1px solid #E11D48', borderRadius: 8, padding: 12, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ color: '#E11D48', fontWeight: 700, fontSize: '0.875rem' }}>🚨 INCOMING SOS - {alerts[0].distance}</div>
+                <div style={{ fontSize: '0.875rem', color: '#9F1239' }}>{alerts[0].summary}</div>
+              </div>
+              <button onClick={() => removeSosAlert(alerts[0].id)} style={{ background: '#E11D48', color: 'white', border: 'none', borderRadius: 4, padding: '4px 8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}>Dismiss</button>
+            </div>
+          )}
+
           {messages.length === 0 && (
             <div className={styles.empty}>
               <div style={{ fontSize: '2.5rem', marginBottom: 8 }}>💬</div>
@@ -371,7 +412,7 @@ export default function Messages() {
             messages.forEach(msg => {
               const dateStr = new Date(msg.sentAt).toLocaleDateString();
               if (dateStr !== lastDate) {
-                const label = dateStr === new Date().toLocaleDateString()
+                const label = dateStr === todayStr
                   ? `Today, ${formatTime(msg.sentAt)}`
                   : dateStr;
                 elements.push(
@@ -388,11 +429,24 @@ export default function Messages() {
                   isOwn={msg.fromId === NODE_IDS.YOU}
                   node={nodeMap.get(msg.fromId)}
                   msgState={msgStates[msg.id]}
+                  getNodeName={(id) => id === NODE_IDS.YOU ? 'You' : (nodeMap.get(id)?.name ?? id)}
                 />
               );
             });
             return elements;
           })()}
+          
+          {typingNode && activeConv === 'group' && (
+            <div className={styles.msgRow}>
+              <Avatar name={nodeMap.get(typingNode)?.name ?? '?'} size="sm" />
+              <div className={styles.bubbleWrap}>
+                <div className={styles.senderName}>{nodeMap.get(typingNode)?.name}</div>
+                <div className={styles.bubble} style={{ padding: '8px 12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                  typing...
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Composer */}

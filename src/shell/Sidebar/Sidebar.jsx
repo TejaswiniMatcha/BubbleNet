@@ -3,8 +3,7 @@
  * Left sidebar: logo, navigation, active bubble card.
  */
 
-import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 import {
   Home, MessageCircle, Image, FolderOpen, StickyNote,
@@ -16,7 +15,6 @@ import Chip from '../../components/Chip/Chip.jsx';
 import useBubbleStore, { useBubble, useMode } from '../../store/bubbleStore.js';
 import { useNodeList } from '../../store/membersStore.js';
 import { useUiActions } from '../../store/uiStore.js';
-import { simulator } from '../../sim/simulator.js';
 
 const NAV_ITEMS = [
   { label: 'Home',          icon: Home,            path: '/',                    requiresBubble: false },
@@ -47,41 +45,7 @@ export default function Sidebar() {
   const mode    = useMode();
   const nodes   = useNodeList();
   const { addToast } = useUiActions();
-  const navigate = useNavigate();
-  const expiresAt = useBubbleStore((s) => s.expiresAt);
-
-  const [remaining, setRemaining] = useState(null);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!expiresAt) { setRemaining(null); return; }
-    
-    let notified5 = false;
-    let notified1 = false;
-    
-    function update() {
-      const left = expiresAt - Date.now();
-      setRemaining(Math.max(0, left));
-      
-      if (left > 0 && left <= 5 * 60 * 1000 && !notified5) {
-        addToast({ message: 'Bubble expires in 5 minutes.', type: 'warning' });
-        notified5 = true;
-      }
-      if (left > 0 && left <= 60 * 1000 && !notified1) {
-        addToast({ message: 'Bubble expires in 1 minute.', type: 'danger' });
-        notified1 = true;
-      }
-      
-      if (left <= 0) {
-        useBubbleStore.getState().clearBubble();
-        simulator.resetDemo();
-        navigate('/expired');
-      }
-    }
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, [expiresAt, navigate, addToast]);
+  const remaining = useBubbleStore((s) => s.remaining);
 
   function handleDisabledClick() {
     addToast({ message: 'Create or join a bubble first.', type: 'info' });

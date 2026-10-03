@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styles from './Create.module.css';
-import Button from '../../components/Button/Button.jsx';
 import { useBubbleActions } from '../../store/bubbleStore.js';
 import { simulator } from '../../sim/simulator.js';
 import { MessageCircle, Tag, Users, Clock, Check, ArrowRight, Sparkles, Handshake } from 'lucide-react';

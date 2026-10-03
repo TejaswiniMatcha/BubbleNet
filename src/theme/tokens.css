@@ -124,22 +124,22 @@
 
 /* ── Collaboration mode ────────────────────────────── */
 .mode-collab {
-  --mode-bg:           #F0FDF4;
-  --mode-accent:       #16A34A;
-  --mode-accent-hover: #15803D;
-  --mode-accent-light: #F0FDF4;
-  --mode-sidebar-active-bg:   #F0FDF4;
-  --mode-sidebar-active-text: #16A34A;
-  --mode-bubble-bg:    #F0FDF4;
+  --mode-bg:           #FFFBEB;
+  --mode-accent:       #F59E0B;
+  --mode-accent-hover: #D97706;
+  --mode-accent-light: #FEF3C7;
+  --mode-sidebar-active-bg:   #FEF3C7;
+  --mode-sidebar-active-text: #D97706;
+  --mode-bubble-bg:    #FFFBEB;
 }
 
 /* ── Emergency mode ────────────────────────────────── */
 .mode-sos {
-  --mode-bg:           #FEE2E2;
-  --mode-accent:       #DC2626;
-  --mode-accent-hover: #B91C1C;
-  --mode-accent-light: #FEF2F2;
-  --mode-sidebar-active-bg:   #FEF2F2;
-  --mode-sidebar-active-text: #DC2626;
-  --mode-bubble-bg:    #FEE2E2;
+  --mode-bg:           #FFF1F2;
+  --mode-accent:       #E11D48;
+  --mode-accent-hover: #BE123C;
+  --mode-accent-light: #FFE4E6;
+  --mode-sidebar-active-bg:   #FFE4E6;
+  --mode-sidebar-active-text: #E11D48;
+  --mode-bubble-bg:    #FFF1F2;
 }

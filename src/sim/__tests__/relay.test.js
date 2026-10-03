@@ -3,8 +3,8 @@
  * Unit tests for the relay engine — deterministic, no React.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { createRelayEngine, PRIORITY, MSG_STATE, DEFAULT_TTL } from '../relay.js';
+import { describe, it, expect } from 'vitest';
+import { createRelayEngine, PRIORITY, MSG_STATE } from '../relay.js';
 import { createPRNG } from '../prng.js';
 import { NODE_IDS, INITIAL_NODES } from '../nodes.js';
 import { createSimulator } from '../simulator.js';
@@ -57,7 +57,7 @@ describe('Relay Engine', () => {
     });
 
     it('delivers exactly once (no duplicate delivery)', () => {
-      const { engine } = makeEngine();
+      makeEngine();
       let deliveries = 0;
       const prng  = createPRNG(42);
       const nodes = makeNodes();
@@ -76,9 +76,9 @@ describe('Relay Engine', () => {
 
   describe('TTL limit', () => {
     it('does not deliver beyond TTL=1 in a chain of 5', () => {
-      const { engine, states } = makeEngine();
+      makeEngine();
       // TTL of 1 means only one hop — Sana is 4 hops away, should not deliver
-      const msg = { ...makeMsg('m3'), _forceTTL: 1 };
+      makeMsg('m3');
       // Override send to use TTL=1 by using a tiny engine directly
       const nodes = makeNodes();
       const prng  = createPRNG(42);

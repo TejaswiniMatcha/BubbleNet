@@ -5,7 +5,6 @@
 
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Shell from '../shell/Shell.jsx';
-import Home from '../pages/Home/Home.jsx';
 import Create from '../pages/Create/Create.jsx';
 import Created from '../pages/Created/Created.jsx';
 import Join from '../pages/Join/Join.jsx';

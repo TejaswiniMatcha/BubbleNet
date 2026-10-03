@@ -3,14 +3,18 @@
  * Top status bar: bubble info, mode switcher, pills, demo controls.
  */
 
+import { useState } from 'react';
 import clsx from 'clsx';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Users, Signal, Search, MessageCircle, Image as ImageIcon, FolderOpen, StickyNote, BarChart2, MapPin, Home } from 'lucide-react';
 import styles from './TopBar.module.css';
 import Chip from '../../components/Chip/Chip.jsx';
-import { useBubble, useMode, useBubbleActions } from '../../store/bubbleStore.js';
+import { useBubble, useMode, useBubbleActions, useExpiry } from '../../store/bubbleStore.js';
 import { useNodeList } from '../../store/membersStore.js';
 import { simulator } from '../../sim/simulator.js';
+import NetworkDrawer from '../../components/NetworkDrawer/NetworkDrawer.jsx';
+import Popover from '../../components/Popover/Popover.jsx';
+import E2EInspector from '../../components/E2EInspector/E2EInspector.jsx';
 
 const MODE_OPTIONS = [
   { key: 'social', label: '😊 Social' },
@@ -34,8 +38,10 @@ export default function TopBar() {
   const { setMode } = useBubbleActions();
   const navigate   = useNavigate();
   const location   = useLocation();
+  const { remaining } = useExpiry();
 
   const onlineCount = nodes.filter((n) => n.online).length;
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   function handleModeChange(m) {
     setMode(m);
@@ -67,7 +73,13 @@ export default function TopBar() {
                 <Home size={18} />
               </button>
               <span className={styles.bubbleName}>{bubble.name}</span>
-              <Chip variant="primary" size="xs" dot>Live</Chip>
+              {remaining !== null ? (
+                <Chip variant="danger" size="xs" icon={<div style={{ width: 6, height: 6, borderRadius: '50%', background: '#E11D48' }} className="animate-pulse" />}>
+                  Expiring in {Math.ceil(remaining / 60000)}m
+                </Chip>
+              ) : (
+                <Chip variant="primary" size="xs" dot>Live</Chip>
+              )}
             </>
           ) : (
             <div className={styles.searchBar}>
@@ -99,12 +111,20 @@ export default function TopBar() {
         <Chip variant="default" size="xs" icon={<Signal size={11} />}>Simulated&nbsp;radios</Chip>
 
         {/* Nodes count */}
-        <Chip variant="default" size="xs" icon={<Users size={11} />}>
-          <span className="tabular-nums">{onlineCount}</span>&nbsp;Nodes
-        </Chip>
+        <button onClick={() => setDrawerOpen(true)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
+          <Chip variant="default" size="xs" icon={<Users size={11} />}>
+            <span className="tabular-nums">{onlineCount}</span>&nbsp;Nodes
+          </Chip>
+        </button>
 
         {/* Encryption */}
-        <Chip variant="success" size="xs" icon={<Lock size={11} />}>E2E</Chip>
+        <Popover trigger={
+          <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <Chip variant="success" size="xs" icon={<Lock size={11} />}>E2E</Chip>
+          </button>
+        } placement="bottom">
+          <E2EInspector />
+        </Popover>
       </div>
       </div>
 
@@ -129,6 +149,7 @@ export default function TopBar() {
         </nav>
       )}
 
+      <NetworkDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </header>
   );
 }

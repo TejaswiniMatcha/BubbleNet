@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BarChart2, Plus, X, Crown, Trash2 } from 'lucide-react';
+import { Plus, X, Crown, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import styles from './Polls.module.css';
@@ -40,6 +40,17 @@ function PollCard({ poll, onVote, onClose }) {
   // Check if I have voted
   const myVote = poll.votes.find(v => v.voter === 'You');
   const results = tallyVotes(poll.options, poll.votes);
+  const [timeLeft, setTimeLeft] = useState(300);
+
+  useEffect(() => {
+    if (poll.closed) return;
+    const timer = setInterval(() => setTimeLeft(t => Math.max(0, t - 1)), 1000);
+    return () => clearInterval(timer);
+  }, [poll.closed]);
+
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
   return (
     <div className={styles.card}>
@@ -48,7 +59,15 @@ function PollCard({ poll, onVote, onClose }) {
           <div className={styles.question}>{poll.question}</div>
           <div className={styles.meta}>
             <span>Created by {poll.creator}</span>
-            <span className={clsx(styles.badge, poll.closed ? styles.closed : styles.active)}>
+            <span>•</span>
+            <span>{poll.votes.length} votes</span>
+            {!poll.closed && (
+              <>
+                <span>•</span>
+                <span style={{ color: '#D97706', fontWeight: 600 }}>⏱ {timeStr}</span>
+              </>
+            )}
+            <span className={clsx(styles.badge, poll.closed ? styles.closed : styles.active)} style={{ marginLeft: 'auto' }}>
               {poll.closed ? 'Closed' : 'Active'}
             </span>
           </div>
@@ -103,6 +122,8 @@ export default function Polls() {
   const { addToast } = useUiActions();
   const [polls, setPolls] = useState(INITIAL_POLLS);
   const [modalOpen, setModalOpen] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('active'); // 'active' or 'ended'
+  const [filterOwnership, setFilterOwnership] = useState('all'); // 'all' or 'mine'
 
   // New poll form
   const [q, setQ] = useState('');
@@ -174,8 +195,21 @@ export default function Polls() {
         <Button onClick={() => setModalOpen(true)} icon={<Plus size={16}/>}>Create Poll</Button>
       </div>
 
+      <div style={{ padding: '0 20px', display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        <Button variant={filterStatus === 'active' ? 'primary' : 'default'} onClick={() => setFilterStatus('active')}>Active</Button>
+        <Button variant={filterStatus === 'ended' ? 'primary' : 'default'} onClick={() => setFilterStatus('ended')}>Ended</Button>
+        <div style={{ width: 1, background: '#E2E8F0', margin: '0 8px' }} />
+        <Button variant={filterOwnership === 'all' ? 'primary' : 'default'} onClick={() => setFilterOwnership('all')}>All Polls</Button>
+        <Button variant={filterOwnership === 'mine' ? 'primary' : 'default'} onClick={() => setFilterOwnership('mine')}>My Polls</Button>
+      </div>
+
       <div className={styles.content}>
-        {polls.map(p => (
+        {polls.filter(p => {
+          if (filterStatus === 'active' && p.closed) return false;
+          if (filterStatus === 'ended' && !p.closed) return false;
+          if (filterOwnership === 'mine' && p.creator !== 'You') return false;
+          return true;
+        }).map(p => (
           <PollCard key={p.id} poll={p} onVote={handleVote} onClose={handleClosePoll} />
         ))}
       </div>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { File as FileIcon, FileText, FileArchive, FileMusic, FileVideo, CheckCircle, Pause, Play, Download, Upload, AlertTriangle } from 'lucide-react';
+import { File as FileIcon, FileText, FileArchive, FileMusic, FileVideo, CheckCircle, Pause, Play, Download, Upload } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './Files.module.css';
 import Button from '../../components/Button/Button.jsx';
@@ -36,6 +36,7 @@ export default function Files() {
   const bubble = useBubble();
   const { addToast } = useUiActions();
   const [files, setFiles] = useState(INITIAL_FILES);
+  const [filterMode, setFilterMode] = useState('available');
   const fileInputRef = useRef(null);
 
   // Simulation loop for active downloads
@@ -108,6 +109,8 @@ export default function Files() {
 
   if (!bubble) return null;
 
+  const filteredFiles = files.filter(f => filterMode === 'downloaded' ? f.status === 'done' : f.status !== 'done');
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -119,6 +122,11 @@ export default function Files() {
           <Button onClick={() => fileInputRef.current?.click()} icon={<Upload size={16}/>}>Share File</Button>
           <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{display: 'none'}} />
         </div>
+      </div>
+
+      <div style={{ padding: '0 20px', display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        <Button variant={filterMode === 'available' ? 'primary' : 'default'} onClick={() => setFilterMode('available')}>Available</Button>
+        <Button variant={filterMode === 'downloaded' ? 'primary' : 'default'} onClick={() => setFilterMode('downloaded')}>Downloaded</Button>
       </div>
 
       <div className={styles.tableWrap}>
@@ -133,7 +141,7 @@ export default function Files() {
             </tr>
           </thead>
           <tbody>
-            {files.map(f => (
+            {filteredFiles.map(f => (
               <tr key={f.id}>
                 <td>
                   <div className={styles.fileInfo}>

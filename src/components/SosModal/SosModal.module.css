@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.typeRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.typeBadge {
+  background: #FFE4E6;
+  color: #BE123C;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.severityBadge {
+  background: #E11D48;
+  color: #FFFFFF;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.summary {
+  font-size: 1rem;
+  color: #0F172A;
+  font-weight: 500;
+  line-height: 1.5;
+  background: #F8FAFC;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #E11D48;
+}
+
+.metaRow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748B;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}

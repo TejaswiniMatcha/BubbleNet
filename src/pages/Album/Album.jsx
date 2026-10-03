@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Heart, Download, Upload, Image as ImageIcon, MapPin, Share2 } from 'lucide-react';
+import { Plus, X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Heart, Download, Upload, Image as ImageIcon, Share2 } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './Album.module.css';
 import Button from '../../components/Button/Button.jsx';
@@ -37,25 +37,34 @@ function generateSVG(seed) {
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 }
 
-const INITIAL_SAMPLES = Array.from({ length: 12 }, (_, i) => ({
-  id: `img-${i}`,
-  url: generateSVG(i),
-  sender: ['Aarav', 'Meera', 'Rohan', 'Sana'][i % 4],
-  hopCount: (i % 3) + 1,
-  likes: i % 5,
-  likedByMe: false,
-  uploaded: true,
-}));
+const INITIAL_SAMPLES = [
+  ...Array.from({ length: 12 }, (_, i) => ({
+    id: `img-${i}`,
+    url: generateSVG(i),
+    type: 'photo',
+    sender: ['Aarav', 'Meera', 'Rohan', 'Sana'][i % 4],
+    hopCount: (i % 3) + 1,
+    likes: i % 5,
+    likedByMe: false,
+    uploaded: true,
+  })),
+  { id: 'vid-1', type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4', sender: 'Aarav', hopCount: 1, likes: 2, likedByMe: false, uploaded: true },
+  { id: 'vid-2', type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4', sender: 'Meera', hopCount: 2, likes: 5, likedByMe: true, uploaded: true },
+  { id: 'vid-3', type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4', sender: 'You', hopCount: 0, likes: 0, likedByMe: false, uploaded: true },
+];
 
 export default function Album() {
   const bubble = useBubble();
   const { addToast } = useUiActions();
   const [photos, setPhotos] = useState(INITIAL_SAMPLES);
+  const [filterType, setFilterType] = useState('all'); // 'all', 'photo', 'video'
   const [menuOpen, setMenuOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [zoomed, setZoomed] = useState(false);
   const fileInputRef = useRef(null);
   const carouselRef = useRef(null);
+  
+  const filteredPhotos = photos.filter(p => filterType === 'all' || p.type === filterType);
 
   // Revoke object URLs on unmount
   useEffect(() => {
@@ -66,17 +75,24 @@ export default function Album() {
     };
   }, [photos]);
 
-  const handleKeyDown = (e) => {
-    if (lightboxIndex === -1) return;
-    if (e.key === 'Escape') setLightboxIndex(-1);
-    if (e.key === 'ArrowLeft') navLightbox(-1);
-    if (e.key === 'ArrowRight') navLightbox(1);
-  };
+  const navLightbox = useCallback((dir) => {
+    setZoomed(false);
+    let next = lightboxIndex + dir;
+    if (next < 0) next = filteredPhotos.length - 1;
+    if (next >= filteredPhotos.length) next = 0;
+    setLightboxIndex(next);
+  }, [lightboxIndex, filteredPhotos.length]);
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (lightboxIndex === -1) return;
+      if (e.key === 'Escape') setLightboxIndex(-1);
+      if (e.key === 'ArrowLeft') navLightbox(-1);
+      if (e.key === 'ArrowRight') navLightbox(1);
+    };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  });
+  }, [lightboxIndex, navLightbox]);
 
   const scrollCarousel = (dir) => {
     if (carouselRef.current) {
@@ -84,37 +100,13 @@ export default function Album() {
     }
   };
 
-  const navLightbox = (dir) => {
-    setZoomed(false);
-    let next = lightboxIndex + dir;
-    if (next < 0) next = photos.length - 1;
-    if (next >= photos.length) next = 0;
-    setLightboxIndex(next);
-  };
 
-  const handleAddSample = () => {
-    const seed = Math.floor(Math.random() * 100) + 20;
-    simulateUpload(generateSVG(seed));
-    setMenuOpen(false);
-  };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      addToast({ message: 'Only images are allowed.', type: 'danger' });
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    simulateUpload(url);
-    setMenuOpen(false);
-    e.target.value = '';
-  };
-
-  const simulateUpload = (url) => {
+  const simulateUpload = useCallback((url) => {
     const newPhoto = {
       id: `img-up-${Date.now()}`,
       url,
+      type: 'photo',
       sender: 'You',
       hopCount: 0,
       likes: 0,
@@ -127,7 +119,26 @@ export default function Album() {
     setTimeout(() => {
       setPhotos(prev => prev.map(p => p.id === newPhoto.id ? { ...p, uploaded: true } : p));
       addToast({ message: 'Photo shared to bubble', type: 'success' });
-    }, 1500);
+    }, 1200);
+  }, [addToast]);
+
+  const handleAddSample = useCallback(() => {
+    const seed = (Date.now() % 100) + 20;
+    simulateUpload(generateSVG(seed));
+    setMenuOpen(false);
+  }, [simulateUpload]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      addToast({ message: 'Only images are allowed.', type: 'danger' });
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    simulateUpload(url);
+    setMenuOpen(false);
+    e.target.value = '';
   };
 
   const toggleLike = (id) => {
@@ -166,18 +177,28 @@ export default function Album() {
               </motion.div>
             )}
           </AnimatePresence>
-          <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{display: 'none'}} />
+          <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*,video/*" style={{display: 'none'}} />
         </div>
       </div>
 
+      <div style={{ padding: '0 20px', display: 'flex', gap: '8px' }}>
+        <Button variant={filterType === 'all' ? 'primary' : 'default'} onClick={() => setFilterType('all')}>All</Button>
+        <Button variant={filterType === 'photo' ? 'primary' : 'default'} onClick={() => setFilterType('photo')}>Photos</Button>
+        <Button variant={filterType === 'video' ? 'primary' : 'default'} onClick={() => setFilterType('video')}>Videos</Button>
+      </div>
+
       {/* Carousel (first 5 images) */}
-      {photos.length > 0 && (
+      {filteredPhotos.length > 0 && (
         <div className={styles.carouselWrap}>
           <div className={styles.carouselArrow} style={{left: 16}} onClick={() => scrollCarousel(-1)}><ChevronLeft size={24}/></div>
           <div className={styles.carousel} ref={carouselRef}>
-            {photos.slice(0, 5).map((p, idx) => (
+            {filteredPhotos.slice(0, 5).map((p, idx) => (
               <div key={p.id} className={styles.carouselItem} onClick={() => setLightboxIndex(idx)}>
-                <img src={p.url} alt="" className={styles.carouselImg} style={{ filter: p.uploaded ? 'none' : 'blur(4px)' }} />
+                {p.type === 'video' ? (
+                  <video src={p.url} className={styles.carouselImg} style={{ filter: p.uploaded ? 'none' : 'blur(4px)', objectFit: 'cover' }} muted loop playsInline />
+                ) : (
+                  <img src={p.url} alt="" className={styles.carouselImg} style={{ filter: p.uploaded ? 'none' : 'blur(4px)' }} />
+                )}
                 {!p.uploaded && (
                   <div className={styles.uploadOverlay}><div className={styles.spinner} /></div>
                 )}
@@ -195,9 +216,13 @@ export default function Album() {
       {/* Masonry Grid (all remaining images) */}
       <div className={styles.masonryWrap}>
         <div className={styles.masonry}>
-          {photos.slice(5).map((p, idx) => (
+          {filteredPhotos.slice(5).map((p, idx) => (
             <div key={p.id} className={styles.masonryItem} onClick={() => setLightboxIndex(idx + 5)}>
-              <img src={p.url} alt="" className={styles.masonryImg} style={{ filter: p.uploaded ? 'none' : 'blur(4px)' }} />
+              {p.type === 'video' ? (
+                <video src={p.url} className={styles.masonryImg} style={{ filter: p.uploaded ? 'none' : 'blur(4px)', objectFit: 'cover' }} muted loop playsInline />
+              ) : (
+                <img src={p.url} alt="" className={styles.masonryImg} style={{ filter: p.uploaded ? 'none' : 'blur(4px)' }} />
+              )}
               {!p.uploaded && (
                 <div className={styles.uploadOverlay}><div className={styles.spinner} /></div>
               )}
@@ -216,10 +241,10 @@ export default function Album() {
           <motion.div className={styles.lightbox} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
             <div className={styles.lbHeader}>
               <div style={{display:'flex', alignItems:'center', gap: 12}}>
-                <div style={{fontWeight: 700}}>{photos[lightboxIndex].sender}</div>
-                {photos[lightboxIndex].hopCount > 0 && (
+                <div style={{fontWeight: 700}}>{filteredPhotos[lightboxIndex].sender}</div>
+                {filteredPhotos[lightboxIndex].hopCount > 0 && (
                   <div style={{fontSize: '0.75rem', background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: 12}}>
-                    <Share2 size={10} style={{marginRight: 4}}/> {photos[lightboxIndex].hopCount} hops
+                    <Share2 size={10} style={{marginRight: 4}}/> {filteredPhotos[lightboxIndex].hopCount} hops
                   </div>
                 )}
               </div>
@@ -228,11 +253,19 @@ export default function Album() {
             
             <div className={styles.lbBody}>
               <div className={styles.lbImgWrap} onClick={() => setZoomed(!zoomed)}>
-                <img 
-                  src={photos[lightboxIndex].url} 
-                  alt="Lightbox" 
-                  className={clsx(styles.lbImg, zoomed ? styles.zoomed : styles.notZoomed)}
-                />
+                {filteredPhotos[lightboxIndex].type === 'video' ? (
+                  <video 
+                    src={filteredPhotos[lightboxIndex].url} 
+                    className={clsx(styles.lbImg, zoomed ? styles.zoomed : styles.notZoomed)}
+                    controls autoPlay
+                  />
+                ) : (
+                  <img 
+                    src={filteredPhotos[lightboxIndex].url} 
+                    alt="Lightbox" 
+                    className={clsx(styles.lbImg, zoomed ? styles.zoomed : styles.notZoomed)}
+                  />
+                )}
               </div>
               <div className={styles.lbControls}>
                 <button className={styles.lbArrow} onClick={(e) => { e.stopPropagation(); navLightbox(-1); }}><ChevronLeft size={32}/></button>
@@ -242,13 +275,13 @@ export default function Album() {
 
             <div className={styles.lbFooter}>
               <button 
-                className={clsx(styles.lbAction, photos[lightboxIndex].likedByMe && styles.liked)} 
-                onClick={() => toggleLike(photos[lightboxIndex].id)}
+                className={clsx(styles.lbAction, filteredPhotos[lightboxIndex].likedByMe && styles.liked)} 
+                onClick={() => toggleLike(filteredPhotos[lightboxIndex].id)}
               >
-                <Heart size={20} fill={photos[lightboxIndex].likedByMe ? "#EF4444" : "none"} /> 
-                {photos[lightboxIndex].likes} Likes
+                <Heart size={20} fill={filteredPhotos[lightboxIndex].likedByMe ? "#EF4444" : "none"} /> 
+                {filteredPhotos[lightboxIndex].likes} Likes
               </button>
-              <button className={styles.lbAction} onClick={() => handleDownload(photos[lightboxIndex])}>
+              <button className={styles.lbAction} onClick={() => handleDownload(filteredPhotos[lightboxIndex])}>
                 <Download size={20} /> Download
               </button>
               <button className={styles.lbAction} onClick={() => setZoomed(!zoomed)}>

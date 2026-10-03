@@ -5,7 +5,7 @@ import styles from './Location.module.css';
 import Switch from '../../components/Switch/Switch.jsx';
 import Chip from '../../components/Chip/Chip.jsx';
 import Avatar from '../../components/Avatar/Avatar.jsx';
-import { useBubble } from '../../store/bubbleStore.js';
+import { useBubble, useSosState } from '../../store/bubbleStore.js';
 import { useUiActions } from '../../store/uiStore.js';
 import { getDistance, getBearing } from '../../utils/haversine.js';
 
@@ -60,12 +60,15 @@ export default function Location() {
   const [rotation, setRotation] = useState(0);
   const [navTarget, setNavTarget] = useState(null);
   const [members, setMembers] = useState(INITIAL_MEMBERS);
+  const [now, setNow] = useState(() => Date.now());
+  const { alerts } = useSosState();
   
   const radarRef = useRef(null);
 
   // Simulate gentle walking
   useEffect(() => {
     const timer = setInterval(() => {
+      setNow(Date.now());
       setMembers(prev => prev.map(m => {
         // Rohan is stale, doesn't move
         if (m.id === 'Rohan') return m;
@@ -200,13 +203,29 @@ export default function Location() {
                 {/* Members */}
                 {members.map(m => {
                   const { x, y } = mapToXY(m.lat, m.lon);
-                  const isStale = Date.now() - m.lastUpdate > 120000;
+                  const isStale = now - m.lastUpdate > 120000;
                   // Don't render if too far outside zoom
                   if (Math.sqrt(x*x + y*y) > radarRadius + 20) return null;
                   return (
                     <g key={m.id} transform={`translate(${x}, ${y})`} className={clsx(styles.marker, isStale && styles.stale)}>
                       <circle cx={0} cy={0} r={14} fill="#FFF" stroke="var(--mode-accent)" strokeWidth="2" />
                       <text x={0} y={4} textAnchor="middle" fill="var(--mode-accent)" fontSize="10" fontWeight="700" transform={`rotate(${-rotation})`}>{m.id.charAt(0)}</text>
+                    </g>
+                  );
+                })}
+
+                {/* SOS Alerts */}
+                {alerts && alerts.map((a, i) => {
+                  // Fake SOS coordinates
+                  const fakeDist = 80 + i * 20;
+                  const fakeBear = 45 + i * 90;
+                  const c = generateCoords(fakeDist, fakeBear);
+                  const { x, y } = mapToXY(c.lat, c.lon);
+                  if (Math.sqrt(x*x + y*y) > radarRadius + 20) return null;
+                  return (
+                    <g key={a.id} transform={`translate(${x}, ${y})`} className={styles.marker}>
+                      <circle cx={0} cy={0} r={18} fill="#E11D48" stroke="#FFF" strokeWidth="2" className="animate-pulse" />
+                      <text x={0} y={4} textAnchor="middle" fill="#FFF" fontSize="12" fontWeight="700" transform={`rotate(${-rotation})`}>!</text>
                     </g>
                   );
                 })}
@@ -256,7 +275,7 @@ export default function Location() {
             {members.map(m => {
               const dist = getDistance(BASE_LAT, BASE_LON, m.lat, m.lon);
               const bear = getBearing(BASE_LAT, BASE_LON, m.lat, m.lon);
-              const isStale = Date.now() - m.lastUpdate > 120000;
+              const isStale = now - m.lastUpdate > 120000;
               const isNav = navTarget?.id === m.id;
 
               return (

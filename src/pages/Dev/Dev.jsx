@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import Button from '../../components/Button/Button.jsx';
 import IconButton from '../../components/IconButton/IconButton.jsx';
-import Card from '../../components/Card/Card.jsx';
 import Chip from '../../components/Chip/Chip.jsx';
 import Badge from '../../components/Badge/Badge.jsx';
 import Avatar from '../../components/Avatar/Avatar.jsx';
@@ -22,7 +21,7 @@ import ProgressRing from '../../components/ProgressRing/ProgressRing.jsx';
 import EmptyState from '../../components/EmptyState/EmptyState.jsx';
 import CountdownRing from '../../components/CountdownRing/CountdownRing.jsx';
 import { useUiActions } from '../../store/uiStore.js';
-import { Settings, User, X } from 'lucide-react';
+import { Settings, User } from 'lucide-react';
 
 export default function Dev() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,6 +31,7 @@ export default function Dev() {
   const [sliderVal, setSliderVal] = useState(50);
   const [pinVal, setPinVal] = useState('');
   const { addToast } = useUiActions();
+  const [now] = useState(() => Date.now());
 
   return (
     <div style={{ padding: 'var(--sp-6)', overflowY: 'auto', height: '100%', background: 'var(--bg-page)' }}>
@@ -138,7 +138,7 @@ export default function Dev() {
             <ProgressRing progress={sliderVal} size={60}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{sliderVal}%</span>
             </ProgressRing>
-            <CountdownRing targetDate={Date.now() + 60000} durationMs={60000} size={60} />
+            <CountdownRing targetDate={now + 60000} durationMs={60000} size={60} />
           </div>
         </div>
       </section>

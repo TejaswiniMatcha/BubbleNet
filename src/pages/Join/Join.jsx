@@ -6,13 +6,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Flashlight, ArrowRight, ShieldAlert, KeyRound, Radio } from 'lucide-react';
+import { Camera, Flashlight, ArrowRight, ShieldAlert, Radio } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './Join.module.css';
 import Button from '../../components/Button/Button.jsx';
 import PinInput from '../../components/PinInput/PinInput.jsx';
 import Tabs from '../../components/Tabs/Tabs.jsx';
-import { useBubbleActions } from '../../store/bubbleStore.js';
+import { useBubbleActions, DEMO_PIN } from '../../store/bubbleStore.js';
 import { simulator } from '../../sim/simulator.js';
 
 export default function Join() {
@@ -37,12 +37,18 @@ export default function Join() {
   useEffect(() => {
     let timer;
     if (lockoutTimer > 0) {
-      timer = setInterval(() => setLockoutTimer(t => t - 1), 1000);
-    } else if (lockoutTimer === 0 && failures >= 5) {
-      setFailures(0);
+      timer = setInterval(() => {
+        setLockoutTimer(t => {
+          if (t <= 1) {
+            setFailures(0);
+            return 0;
+          }
+          return t - 1;
+        });
+      }, 1000);
     }
     return () => clearInterval(timer);
-  }, [lockoutTimer, failures]);
+  }, [lockoutTimer]);
 
   function handleJoinPin(e) {
     e.preventDefault();
@@ -51,7 +57,7 @@ export default function Join() {
     
     setLoading(true);
     setTimeout(() => {
-      if (pin === '4827') {
+      if (pin === DEMO_PIN) {
         const bubble = simulator.joinBubble(pin);
         setBubble(bubble);
         setMode('social');
@@ -72,7 +78,7 @@ export default function Join() {
   function handleScanQR() {
     setScanning(true);
     setTimeout(() => {
-      const bubble = simulator.joinBubble('4827');
+      const bubble = simulator.joinBubble(DEMO_PIN);
       setBubble(bubble);
       setMode('social');
       setExpiresAt(Date.now() + 3600 * 1000);
@@ -85,7 +91,7 @@ export default function Join() {
     setTimeout(() => {
       setNearbyStatus('joined');
       setTimeout(() => {
-        const bubble = simulator.joinBubble('4827');
+        const bubble = simulator.joinBubble(DEMO_PIN);
         setBubble(bubble);
         setMode('social');
         setExpiresAt(Date.now() + 3600 * 1000);
@@ -163,7 +169,7 @@ export default function Join() {
                     </div>
                   )}
 
-                  <p className={styles.hint}>Demo PIN: 4827</p>
+                  <p className={styles.hint}>Demo PIN: {DEMO_PIN}</p>
 
                   <Button type="submit" fullWidth size="lg" loading={loading} disabled={pin.length < 4 || lockoutTimer > 0} icon={<ArrowRight size={18}/>}>
                     Join Bubble
