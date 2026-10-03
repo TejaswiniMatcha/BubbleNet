@@ -657,3 +657,33 @@
   border-radius: 50%;
   background: #22C55E;
 }
+
+/* ── MOBILE RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  .page {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .page::-webkit-scrollbar {
+    display: none;
+  }
+  .navRail, .convPanel, .mainArea, .rightPanel {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+  .navRail { 
+    width: 60px; 
+  }
+  .convPanel { 
+    width: calc(100vw - 60px); 
+    border-right: none;
+  }
+  .mainArea { 
+    width: 100vw; 
+    border-left: 1px solid #E8EDF2;
+  }
+  .rightPanel { 
+    width: 100vw; 
+  }
+}

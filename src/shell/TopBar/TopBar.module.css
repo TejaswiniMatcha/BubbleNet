@@ -181,3 +181,36 @@
   border-bottom-color: var(--mode-accent);
 }
 
+/* ── MOBILE RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  .topRow {
+    flex-wrap: wrap;
+    height: auto;
+    padding: var(--sp-2) var(--sp-4);
+    gap: var(--sp-2);
+  }
+  .leftSection {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .searchBar {
+    display: none;
+  }
+  .modeSwitch {
+    width: 100%;
+    justify-content: center;
+  }
+  .navRow {
+    overflow-x: auto;
+    padding: 0 var(--sp-2);
+    gap: var(--sp-4);
+    scrollbar-width: none;
+  }
+  .navRow::-webkit-scrollbar {
+    display: none;
+  }
+  .navItem {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

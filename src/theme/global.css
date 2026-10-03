@@ -155,25 +155,3 @@ img, svg { display: block; max-width: 100%; }
   }
 }
 
-/* ── Narrow-window guard (< 1100px) ─────────────────────── */
-.narrow-guard {
-  display: none;
-}
-@media (max-width: 900px) {
-  .narrow-guard {
-    display: flex;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: var(--bg-page);
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: var(--sp-4);
-    padding: var(--sp-8);
-    text-align: center;
-  }
-  #app-shell {
-    display: none !important;
-  }
-}

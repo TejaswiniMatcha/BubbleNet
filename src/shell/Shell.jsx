@@ -25,19 +25,7 @@ export default function Shell() {
 
   return (
     <>
-      {/* Narrow window guard */}
-      <div className="narrow-guard" aria-live="polite">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden>
-          <rect x="4" y="8" width="40" height="32" rx="4" fill="#E0F2FE" stroke="#0284C7" strokeWidth="2"/>
-          <rect x="10" y="14" width="28" height="20" rx="2" fill="#BFDBFE"/>
-        </svg>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A' }}>
-          BubbleNet is designed for laptop screens
-        </h1>
-        <p style={{ color: '#475569', maxWidth: 360 }}>
-          Please widen your browser window to at least 900&nbsp;px to use this app.
-        </p>
-      </div>
+
 
       {/* Main shell */}
       <div
