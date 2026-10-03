@@ -1,0 +1,23 @@
+/* src/components/ProgressRing/ProgressRing.module.css */
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg {
+  transform: rotate(-90deg);
+}
+
+.track {
+  fill: none;
+  stroke: var(--border);
+}
+
+.fill {
+  fill: none;
+  stroke: var(--mode-accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s var(--ease-out);
+}

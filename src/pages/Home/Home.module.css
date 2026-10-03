@@ -1,0 +1,247 @@
+/* src/pages/Home/Home.module.css */
+
+.page {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8);
+  gap: var(--sp-8);
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-page);
+}
+
+.hero {
+  text-align: center;
+  max-width: 600px;
+  position: relative;
+  z-index: 2;
+}
+
+.heroIcon {
+  width: 72px;
+  height: 72px;
+  background: var(--mode-bubble-bg);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--sp-5);
+  transition: background var(--dur-base) var(--ease-inout);
+}
+
+.heroTitle {
+  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin-bottom: var(--sp-3);
+}
+
+.heroSub {
+  font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+  max-width: 1100px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 1024px) {
+  .features { grid-template-columns: repeat(2, 1fr); max-width: 600px; }
+}
+
+@media (max-width: 600px) {
+  .features { grid-template-columns: 1fr; }
+}
+
+.featureCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+  margin-bottom: var(--sp-2);
+}
+
+.featureTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+}
+
+.featureDesc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+
+
+.logoMark {
+  width: 40px;
+  height: 40px;
+  background: var(--mode-accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoMark::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background: #FFF;
+  border-radius: 50%;
+}
+
+/* Active Bubble Container */
+.activeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-6);
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 2;
+}
+
+.activeCard {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.activeHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.activeIcon {
+  width: 56px;
+  height: 56px;
+  background: var(--mode-accent-light);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activeTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.activeTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.activeMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.activeActions {
+  display: flex;
+  gap: var(--sp-3);
+  width: 100%;
+}
+
+.leaveBtn {
+  color: var(--danger) !important;
+}
+
+.leaveBtn:hover {
+  background: #FEF2F2 !important;
+}
+
+/* Quick Modes */
+.quickModes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  width: 100%;
+}
+
+.quickCard {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.quickCard:hover {
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.quickActive {
+  border-color: var(--mode-accent);
+  background: var(--mode-accent-light);
+}
+
+.quickIcon {
+  width: 40px;
+  height: 40px;
+  background: #F8FAFC;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickActive .quickIcon {
+  background: #FFFFFF;
+}
+
+.quickTitle {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}

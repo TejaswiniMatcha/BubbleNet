@@ -1,0 +1,231 @@
+/* src/pages/Location/Location.module.css */
+
+.page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Radar Area */
+.radarWrap {
+  flex: 1;
+  background: #F8FAFC;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.radarControls {
+  position: absolute;
+  bottom: var(--sp-6);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--sp-2);
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--sp-2);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.zoomChip {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.zoomChip:hover { background: #E2E8F0; }
+.zoomChip.active { background: var(--mode-accent); color: #FFF; }
+
+.radarSvg {
+  width: 100%;
+  height: 100%;
+  touch-action: none; /* for compass rotation */
+}
+
+.marker {
+  transition: transform 0.5s ease; /* gentle movement */
+}
+.marker.stale {
+  opacity: 0.3;
+}
+
+/* Arrow to Target */
+.navArrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80px;
+  height: 80px;
+  margin-top: -40px;
+  margin-left: -40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center center;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 320px;
+  background: #FFFFFF;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.selfCard {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  background: #F8FAFC;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.shareToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shareLabel {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coordsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.coords {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.membersList {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.memberCard {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: var(--sp-3);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.memberHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.memberInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.memberStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navBtn {
+  background: var(--mode-accent-light);
+  color: var(--mode-accent);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.navBtn:hover {
+  background: var(--mode-accent);
+  color: #FFF;
+}
+.navBtn.active {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+.navBtn.active:hover {
+  background: #DC2626;
+  color: #FFF;
+}

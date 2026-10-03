@@ -1,0 +1,161 @@
+/* src/pages/Files/Files.module.css */
+
+.page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.tableWrap {
+  flex: 1;
+  overflow: auto;
+  padding: var(--sp-6);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--sp-3);
+}
+
+.table th {
+  text-align: left;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0 var(--sp-4) var(--sp-2);
+}
+
+.table td {
+  background: #FFFFFF;
+  padding: var(--sp-4);
+  font-size: 0.9375rem;
+}
+
+.table tr td:first-child { border-radius: 12px 0 0 12px; border-left: 1px solid var(--border); }
+.table tr td:last-child { border-radius: 0 12px 12px 0; border-right: 1px solid var(--border); text-align: right; }
+.table tr td { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.fileIcon {
+  width: 40px;
+  height: 40px;
+  background: #F1F5F9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mode-accent);
+}
+
+.fileName {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+.fileMeta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.progressWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 200px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--mode-accent);
+  transition: width 0.2s linear;
+}
+
+.progressSpeed {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.hopVis {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.hopDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.hopDot.active { background: var(--mode-accent); }
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.statusBadge.done { background: var(--success-light); color: var(--success); }
+.statusBadge.paused { background: #FEF3C7; color: #D97706; }
+.statusBadge.active { background: var(--mode-accent-light); color: var(--mode-accent); }
+
+.actionBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all var(--dur-fast);
+}
+.actionBtn:hover { background: #F1F5F9; color: var(--text-primary); }

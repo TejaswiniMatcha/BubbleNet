@@ -1,0 +1,24 @@
+/* src/components/PinInput/PinInput.module.css */
+
+.wrapper  { display: flex; gap: var(--sp-3); align-items: center; }
+.box {
+  width: 56px;
+  height: 64px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-input);
+  background: var(--bg-card);
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-primary);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+  font-variant-numeric: tabular-nums;
+}
+.box:focus {
+  border-color: var(--mode-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-accent) 15%, transparent);
+  outline: none;
+}
+.box.filled { border-color: var(--mode-accent); background: var(--mode-accent-light); }
+.box.error  { border-color: var(--danger); }
+.separator  { color: var(--text-muted); font-size: 1.25rem; margin: 0 2px; }

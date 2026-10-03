@@ -1,0 +1,255 @@
+/* src/pages/Polls/Polls.module.css */
+
+.page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-6);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-6);
+  align-content: start;
+}
+
+/* Poll Card */
+.card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  position: relative;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.question {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: #E2E8F0;
+  color: var(--text-secondary);
+}
+.badge.closed { background: #FEE2E2; color: #DC2626; }
+.badge.active { background: #D1FAE5; color: #059669; }
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.optionRow {
+  position: relative;
+  cursor: pointer;
+}
+.optionRow.closed { cursor: default; }
+
+.optionBg {
+  background: #F1F5F9;
+  border-radius: 8px;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.optionFill {
+  height: 100%;
+  background: #E0F2FE;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.isWinner .optionFill { background: #FEF3C7; }
+
+.optionContent {
+  position: relative;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1;
+}
+
+.optionText {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.optionStats {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voterAvatars {
+  display: flex;
+  margin-right: 4px;
+}
+.voterAvatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--mode-accent);
+  color: #FFF;
+  font-size: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #FFF;
+  margin-left: -6px;
+}
+.voterAvatar:first-child { margin-left: 0; }
+
+.radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.optionRow.selected .radio {
+  border-color: var(--mode-accent);
+}
+.optionRow.selected .radio::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mode-accent);
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #FFFFFF;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modalTitle { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); }
+
+.modalBody {
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block; }
+.input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9375rem;
+}
+.input:focus { outline: none; border-color: var(--mode-accent); }
+
+.optionInputWrap { display: flex; gap: 8px; align-items: center; }
+
+.removeBtn {
+  background: none; border: none; color: var(--danger); cursor: pointer; padding: 4px;
+}
+
+.addOptionBtn {
+  background: none;
+  border: none;
+  color: var(--mode-accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+}
+
+.modalFooter {
+  padding: var(--sp-4) var(--sp-5);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+}

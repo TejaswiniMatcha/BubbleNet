@@ -1,0 +1,31 @@
+/* src/components/Tabs/Tabs.module.css */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.tab {
+  flex: 1;
+  height: 44px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: color var(--dur-fast);
+}
+
+.tab:hover { color: var(--text-primary); }
+.tab.active { color: var(--mode-accent); }
+
+.underline {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--mode-accent);
+  border-radius: 2px 2px 0 0;
+}

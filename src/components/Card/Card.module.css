@@ -1,0 +1,17 @@
+/* src/components/Card/Card.module.css */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: var(--sp-6);
+  transition: box-shadow var(--dur-base) var(--ease-out);
+}
+
+.elevated { box-shadow: var(--shadow-md); }
+.clickable { cursor: pointer; }
+.clickable:hover { box-shadow: var(--shadow-lg); }
+
+.flush { padding: 0; }
+.sm    { padding: var(--sp-4); border-radius: var(--radius-panel); }

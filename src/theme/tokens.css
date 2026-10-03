@@ -1,0 +1,145 @@
+/* ============================================================
+   BubbleNet — Design Tokens
+   All colours, radius, shadows, spacing, mode variables.
+   Import this FIRST in main.jsx.
+   ============================================================ */
+
+:root {
+  /* ── Typography ─────────────────────────────────────── */
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── Text colours ───────────────────────────────────── */
+  --text-primary:   #0F172A;
+  --text-secondary: #475569;
+  --text-muted:     #94A3B8;
+  --text-inverse:   #FFFFFF;
+
+  /* ── Surface / background ───────────────────────────── */
+  --bg-page:  #FAFAFA;
+  --bg-card:  #FFFFFF;
+  --bg-overlay: rgba(15, 23, 42, 0.32);
+
+  /* ── Borders ────────────────────────────────────────── */
+  --border:       #E5E7EB;
+  --border-focus: #0284C7;
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 16px 40px rgba(16, 24, 40, 0.10);
+  --shadow-pop: 0 4px 16px rgba(16, 24, 40, 0.12);
+
+  /* ── Radius ─────────────────────────────────────────── */
+  --radius-card:  20px;
+  --radius-panel: 16px;
+  --radius-input: 12px;
+  --radius-btn:   12px;
+  --radius-chip:  999px;
+  --radius-sm:    8px;
+  --radius-xs:    6px;
+
+  /* ── Spacing (8-pt grid) ────────────────────────────── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* ── Semantic colours ───────────────────────────────── */
+  --success:       #16A34A;
+  --success-light: #F0FDF4;
+  --warning:       #F59E0B;
+  --warning-light: #FFFBEB;
+  --danger:        #DC2626;
+  --danger-light:  #FEE2E2;
+  --info:          #0284C7;
+  --info-light:    #E0F2FE;
+
+  /* ── Battery colours ────────────────────────────────── */
+  --battery-high:   #16A34A;
+  --battery-mid:    #F59E0B;
+  --battery-low:    #DC2626;
+
+  /* ── Sidebar ────────────────────────────────────────── */
+  --sidebar-width: 240px;
+  --sidebar-bg:    #FFFFFF;
+
+  /* ── Top bar ────────────────────────────────────────── */
+  --topbar-height: 64px;
+  --topbar-bg:     #FFFFFF;
+
+  /* ── Right panel ────────────────────────────────────── */
+  --panel-width: 320px;
+  --panel-bg:    #FAFAFA;
+
+  /* ── Scrollbar ──────────────────────────────────────── */
+  --scrollbar-w:     4px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-hover: #94A3B8;
+
+  /* ── Motion ─────────────────────────────────────────── */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.4, 0, 1, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:   150ms;
+  --dur-base:   250ms;
+  --dur-slow:   400ms;
+
+  /* ── Focus ring ─────────────────────────────────────── */
+  --focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--mode-accent);
+
+  /* ═══════════════════════════════════════════════════════
+     MODE VARIABLES — animated on mode change (250ms)
+     These are overridden by .mode-social / .mode-collab / .mode-sos
+     ═══════════════════════════════════════════════════════ */
+  --mode-bg:           #E0F2FE;
+  --mode-accent:       #0284C7;
+  --mode-accent-hover: #0369A1;
+  --mode-accent-light: #EFF6FF;
+  --mode-text-on-accent: #FFFFFF;
+
+  /* Mode-tinted surfaces */
+  --mode-topbar-bg:    #FFFFFF;
+  --mode-sidebar-active-bg: #EFF6FF;
+  --mode-sidebar-active-text: #0284C7;
+  --mode-bubble-bg:    #E0F2FE;
+}
+
+/* ── Social mode (default) ─────────────────────────── */
+.mode-social {
+  --mode-bg:           #E0F2FE;
+  --mode-accent:       #0284C7;
+  --mode-accent-hover: #0369A1;
+  --mode-accent-light: #EFF6FF;
+  --mode-sidebar-active-bg:   #EFF6FF;
+  --mode-sidebar-active-text: #0284C7;
+  --mode-bubble-bg:    #E0F2FE;
+}
+
+/* ── Collaboration mode ────────────────────────────── */
+.mode-collab {
+  --mode-bg:           #F0FDF4;
+  --mode-accent:       #16A34A;
+  --mode-accent-hover: #15803D;
+  --mode-accent-light: #F0FDF4;
+  --mode-sidebar-active-bg:   #F0FDF4;
+  --mode-sidebar-active-text: #16A34A;
+  --mode-bubble-bg:    #F0FDF4;
+}
+
+/* ── Emergency mode ────────────────────────────────── */
+.mode-sos {
+  --mode-bg:           #FEE2E2;
+  --mode-accent:       #DC2626;
+  --mode-accent-hover: #B91C1C;
+  --mode-accent-light: #FEF2F2;
+  --mode-sidebar-active-bg:   #FEF2F2;
+  --mode-sidebar-active-text: #DC2626;
+  --mode-bubble-bg:    #FEE2E2;
+}

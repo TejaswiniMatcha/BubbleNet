@@ -1,0 +1,47 @@
+/* src/components/Avatar/Avatar.module.css */
+
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* Sizes */
+.xs  { width: 24px; height: 24px; font-size: 0.6rem; }
+.sm  { width: 32px; height: 32px; font-size: 0.75rem; }
+.md  { width: 40px; height: 40px; font-size: 0.875rem; }
+.lg  { width: 48px; height: 48px; font-size: 1rem; }
+.xl  { width: 56px; height: 56px; font-size: 1.125rem; }
+
+/* Initials text */
+.initials {
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Battery ring — SVG overlay */
+.ring {
+  position: absolute;
+  inset: -4px;
+  pointer-events: none;
+}
+
+/* Online dot */
+.onlineDot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  background: var(--success);
+}
+.onlineDot.offline { background: #94A3B8; }

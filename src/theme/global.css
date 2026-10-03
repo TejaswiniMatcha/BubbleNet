@@ -1,0 +1,179 @@
+/* ============================================================
+   BubbleNet — Global Reset & Base Styles
+   ============================================================ */
+
+/* Import design tokens first */
+@import './tokens.css';
+
+/* Import bundled font */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
+/* ── Box sizing reset ───────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Root & body ────────────────────────────────────────── */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  overflow: hidden;          /* NEVER page-scroll */
+  height: 100%;
+  width: 100%;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Typography ─────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+p { color: var(--text-secondary); }
+small { font-size: 0.8125rem; color: var(--text-muted); }
+
+/* ── Links ──────────────────────────────────────────────── */
+a {
+  color: var(--mode-accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* ── Focus rings ────────────────────────────────────────── */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Button reset ───────────────────────────────────────── */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* ── Input reset ────────────────────────────────────────── */
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  background: var(--bg-card);
+  outline: none;
+}
+input:focus-visible, textarea:focus-visible {
+  border-color: var(--mode-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-accent) 15%, transparent);
+}
+
+/* ── Lists ──────────────────────────────────────────────── */
+ul, ol { list-style: none; }
+
+/* ── Images ─────────────────────────────────────────────── */
+img, svg { display: block; max-width: 100%; }
+
+/* ── Thin scrollbars (webkit + standard) ───────────────── */
+::-webkit-scrollbar { width: var(--scrollbar-w); height: var(--scrollbar-w); }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-chip);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* Firefox */
+* { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) transparent; }
+
+/* ── Utilities ──────────────────────────────────────────── */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Mode variable transitions ──────────────────────────── */
+#app-shell {
+  transition:
+    --mode-bg var(--dur-base) var(--ease-inout),
+    --mode-accent var(--dur-base) var(--ease-inout),
+    --mode-accent-hover var(--dur-base) var(--ease-inout),
+    --mode-accent-light var(--dur-base) var(--ease-inout),
+    --mode-sidebar-active-bg var(--dur-base) var(--ease-inout),
+    --mode-sidebar-active-text var(--dur-base) var(--ease-inout),
+    --mode-bubble-bg var(--dur-base) var(--ease-inout);
+}
+
+/* ── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Narrow-window guard (< 1100px) ─────────────────────── */
+.narrow-guard {
+  display: none;
+}
+@media (max-width: 900px) {
+  .narrow-guard {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg-page);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--sp-4);
+    padding: var(--sp-8);
+    text-align: center;
+  }
+  #app-shell {
+    display: none !important;
+  }
+}

@@ -1,0 +1,88 @@
+/* src/shell/RightPanel/RightPanel.module.css */
+
+.panel {
+  background: var(--panel-bg);
+  border-left: 1px solid var(--border);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Tab bar */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-card);
+}
+
+.tab {
+  flex: 1;
+  height: 44px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.tab:hover { color: var(--text-primary); }
+.tab.active {
+  color: var(--mode-accent);
+  border-bottom-color: var(--mode-accent);
+  transition: color var(--dur-base) var(--ease-inout),
+              border-color var(--dur-base) var(--ease-inout);
+}
+
+/* Panel content */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4);
+}
+
+/* Member list */
+.memberItem {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast);
+}
+.memberItem:hover { background: var(--bg-card); }
+
+.memberInfo {
+  flex: 1;
+  min-width: 0;
+}
+.memberName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.memberMeta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: 2px;
+}
+.batteryVal {
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Mesh panel */
+.meshWrap {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

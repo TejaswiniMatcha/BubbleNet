@@ -1,0 +1,45 @@
+/* src/components/Input/Input.module.css */
+
+.wrapper { display: flex; flex-direction: column; gap: var(--sp-2); }
+.label   { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
+.helper  { font-size: 0.8125rem; color: var(--text-muted); }
+.error   { color: var(--danger); }
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  height: 42px;
+  padding: 0 var(--sp-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-input);
+  background: var(--bg-card);
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.input::placeholder { color: var(--text-muted); }
+.input:focus { 
+  border-color: var(--mode-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-accent) 15%, transparent);
+  outline: none;
+}
+.input.hasError { border-color: var(--danger); }
+
+.input.hasLeft  { padding-left: 40px; }
+.input.hasRight { padding-right: 40px; }
+
+.leadIcon, .trailIcon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+}
+.leadIcon  { left:  12px; }
+.trailIcon { right: 12px; }

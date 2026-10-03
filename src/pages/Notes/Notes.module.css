@@ -1,0 +1,304 @@
+/* src/pages/Notes/Notes.module.css */
+
+.page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+.sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.splitContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Pinned Board */
+.pinnedBoard {
+  flex: 0 0 35%;
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pinnedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--sp-4);
+}
+
+.pinCard {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.pinCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pinAuthor {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.unpinBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.unpinBtn:hover { color: var(--danger); background: var(--danger-light); }
+
+.pinContent {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Threaded Notes */
+.threadArea {
+  flex: 1;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.threadList {
+  flex: 1;
+  padding: var(--sp-6);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.noteItem {
+  display: flex;
+  gap: var(--sp-3);
+  position: relative;
+  transition: background 0.3s ease;
+  padding: var(--sp-2);
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+.noteItem.highlight {
+  background: var(--mode-accent-light);
+  border-color: color-mix(in srgb, var(--mode-accent) 30%, transparent);
+}
+
+.noteContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.noteHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.8125rem;
+}
+
+.authorName { font-weight: 700; color: var(--text-primary); }
+.noteTime { color: var(--text-muted); }
+
+.noteText {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.noteActions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: 4px;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.actionBtn:hover { color: var(--mode-accent); }
+
+.replies {
+  margin-top: var(--sp-3);
+  padding-left: var(--sp-4);
+  border-left: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* Editor */
+.editorWrap {
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--border);
+  background: #F8FAFC;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.presenceRow {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  height: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.presenceDot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mode-accent);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { opacity: 0.5; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.editorInput {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-end;
+}
+
+.textarea {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.9375rem;
+  resize: none;
+  min-height: 44px;
+  max-height: 160px;
+  font-family: inherit;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.textarea:focus {
+  outline: none;
+  border-color: var(--mode-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-accent) 15%, transparent);
+}
+
+.sendBtn {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--mode-accent);
+  color: #FFFFFF;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Drawer */
+.drawerOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+.drawer {
+  width: 320px;
+  background: #FFFFFF;
+  height: 100%;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+.drawerHeader {
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.drawerContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-4);
+}
+.historyItem {
+  margin-bottom: var(--sp-4);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+.historyTime {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.historyUser { font-weight: 600; color: var(--text-primary); }

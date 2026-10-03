@@ -1,0 +1,21 @@
+/* src/components/Popover/Popover.module.css */
+.root {
+  position: relative;
+  display: inline-block;
+}
+
+.popover {
+  position: absolute;
+  z-index: 500;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-pop);
+  padding: var(--sp-4);
+  min-width: 200px;
+}
+
+.bottom { top: calc(100% + var(--sp-2)); left: 50%; transform: translateX(-50%); }
+.top { bottom: calc(100% + var(--sp-2)); left: 50%; transform: translateX(-50%); }
+.left { right: calc(100% + var(--sp-2)); top: 50%; transform: translateY(-50%); }
+.right { left: calc(100% + var(--sp-2)); top: 50%; transform: translateY(-50%); }
