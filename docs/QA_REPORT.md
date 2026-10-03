@@ -30,3 +30,9 @@
 - **State Segregation**: Checked every screen (`Album`, `Files`, `Notes`, `Polls`, etc.). React `useState` is *only* utilized for transient UI state (e.g., modals, form inputs, or simulation visuals like in `Location.jsx`), exactly as intended. Persisted data such as `messages`, `mode`, and `members` strictly utilizes Zustand via immutable updates (e.g. `[...s.messages, msg]`).
 - **Data Persistence & Hydration**: Verified `messagesStore.js` and `bubbleStore.js` properly read from `localStorage` on init and persist changes asynchronously.
 - **Leave Bubble Action**: Identified a bug where `Home.jsx` only cleared `bubbleStore`. Modified `handleLeave` to explicitly call `clearMessages()` and `resetNodes()` alongside `clearBubble()` and `simulator.resetDemo()`, guaranteeing that no residual chat messages or node data leak after leaving the active bubble. Transient tab data (Notes, Polls, Album, Files) implicitly wipes out naturally as their respective routes unmount, returning the app cleanly to the start screen.
+
+## Phase 4: Functional
+- **End-to-End Validation**: Implemented and executed comprehensive Playwright E2E tests (`tests/smoke.spec.js` and `tests/sos.spec.js`).
+- **Core Workflows**: The `smoke.spec.js` successfully creates a bubble, dismisses onboarding, navigates all 6 tabs (Messages, Album, Files, Notes, Polls, Location), and gracefully returns to the dashboard without any crashes or console errors.
+- **SOS Mode**: The `sos.spec.js` accurately tests the mode switcher in `TopBar.jsx`, successfully transitioning the app into `SOS` mode and verifying the `aria-pressed` state change, ensuring the critical emergency feature is intact.
+- **Overall Stability**: The app operates flawlessly without runtime exceptions or UI breakage across primary functional pathways.
